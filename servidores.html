@@ -39,6 +39,30 @@
         table th:nth-child(10), table td:nth-child(10) { width: 70px; }
         table th:nth-child(11), table td:nth-child(11) { width: 70px; }
         table th:nth-child(12), table td:nth-child(12) { width: 70px; }
+
+        /* RESPONSIVO - MOBILE */
+        @media (max-width: 1024px) {
+            .table-container { max-height: calc(100vh - 350px); }
+            table th, table td { font-size: 10px; padding: 3px 4px !important; }
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 15px; text-align: center; }
+            header h1 { font-size: 1.5rem; }
+            header a { width: 100%; justify-content: center; }
+            .grid { grid-template-columns: 1fr !important; }
+            .table-container { max-height: calc(100vh - 420px); overflow-x: auto; }
+            table { min-width: 900px; }
+            #filterMes, #searchInput, #filterTipoFolha, #filterVinculo, #filterCargo { font-size: 14px; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding-left: 10px; padding-right: 10px; }
+            header h1 { font-size: 1.2rem; }
+            .bg-white.rounded-xl.shadow-lg.p-6 { padding: 15px; }
+            .mt-4.flex { flex-direction: column; gap: 10px; }
+            button { width: 100%; }
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">

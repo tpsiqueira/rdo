@@ -379,6 +379,31 @@
       width: 0;
     }
 
+    /* BOTÃO VOLTAR */
+    .btn-voltar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      z-index: 100;
+    }
+
+    .btn-voltar:hover {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
     /* EMPTY */
     .empty {
       grid-column: 1/-1;
@@ -389,16 +414,49 @@
       letter-spacing: 0.25em;
     }
 
+    @media (max-width: 768px) {
+      header { padding: 60px 20px 40px; }
+      h1 { font-size: 56px; }
+      h1 span { font-size: 0.32em; letter-spacing: 0.2em; }
+      .controls { gap: 6px; }
+      .filter-btn { padding: 8px 16px; font-size: 9px; }
+      .search-wrap input { width: 100%; max-width: 300px; }
+      #slideshow-bar { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
+      #slideshow-bar button { padding: 8px 14px; font-size: 9px; }
+      .sb-sep { display: none; }
+      .lb-nav { flex-wrap: wrap; gap: 10px; }
+      .lb-btn { padding: 10px 18px; font-size: 10px; }
+    }
+
     @media (max-width: 600px) {
       .grid { grid-template-columns: repeat(2, 1fr); gap: 3px; }
-      h1 { font-size: 48px; }
+      h1 { font-size: 42px; }
+      h1 span { font-size: 0.28em; }
       .lb-zone { display: none; }
+      header { padding: 50px 15px 30px; }
+      .header-eyebrow { font-size: 9px; }
+      .photo-count { font-size: 10px; }
+      #lightbox-img { max-width: 95vw; max-height: 70vh; }
+      .lb-counter { font-size: 10px; }
+      .lb-nav { width: 100%; justify-content: center; }
+      .lb-btn { flex: 1; min-width: 80px; text-align: center; }
+    }
+
+    @media (max-width: 400px) {
+      .grid { grid-template-columns: repeat(2, 1fr); gap: 2px; }
+      h1 { font-size: 36px; }
+      .controls { padding: 0 15px 40px; }
+      .filter-btn { padding: 6px 12px; }
+      #slideshow-bar { padding: 10px 12px; }
+      #slideshow-bar button { padding: 6px 10px; font-size: 8px; }
     }
   </style>
 </head>
 <body>
 
 <div id="progress"></div>
+
+<a href="portal.html" class="btn-voltar">← Voltar</a>
 
 <header>
   <p class="header-eyebrow">Galeria Pessoal</p>
