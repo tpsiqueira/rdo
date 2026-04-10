@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Álbum — Vanesca</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@100;300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0b08;
+      --surface: #151210;
+      --gold: #c9a96e;
+      --gold-light: #e8d5a3;
+      --cream: #f5ede0;
+      --muted: #6b5f50;
+      --text: #ddd0be;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Josefin Sans', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    /* HEADER */
+    header {
+      text-align: center;
+      padding: 80px 24px 60px;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      display: block;
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 36px auto 0;
+    }
+
+    .header-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 10vw, 96px);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--cream);
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+    }
+
+    h1 span {
+      display: block;
+      font-style: normal;
+      font-size: 0.38em;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-top: 14px;
+      font-family: 'Josefin Sans', sans-serif;
+      font-weight: 100;
+    }
+
+    .photo-count {
+      margin-top: 30px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.25em;
+    }
+
+    /* CONTROLS */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 24px 52px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--muted);
+      color: var(--muted);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201,169,110,0.06);
+    }
+
+    /* SEARCH */
+    .search-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 52px;
+      padding: 0 24px;
+    }
+
+    .search-wrap input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--muted);
+      color: var(--text);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      padding: 10px 4px;
+      width: 280px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-wrap input:focus { border-color: var(--gold); }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 4px;
+      padding: 0 4px 120px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .grid-item {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1;
+      cursor: pointer;
+      background: var(--surface);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.4s ease;
+      filter: brightness(0.88) saturate(0.85);
+    }
+
+    .grid-item:hover img {
+      transform: scale(1.06);
+      filter: brightness(1) saturate(1.05);
+    }
+
+    .grid-item-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.7) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 18px;
+    }
+
+    .grid-item:hover .grid-item-overlay { opacity: 1; }
+
+    .grid-item-num {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: var(--gold-light);
+    }
+
+    .fav-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.2s, color 0.2s;
+      line-height: 1;
+    }
+
+    .fav-btn:hover { transform: scale(1.3); }
+
+    /* LIGHTBOX */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(8,6,4,0.97);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #lightbox.open { display: flex; }
+
+    #lightbox-img {
+      max-width: 90vw;
+      max-height: 78vh;
+      object-fit: contain;
+      border: 1px solid rgba(201,169,110,0.15);
+      box-shadow: 0 0 80px rgba(0,0,0,0.8);
+      transition: opacity 0.25s ease;
+    }
+
+    #lightbox-img.fading { opacity: 0; }
+
+    .lb-meta {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .lb-counter {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+    }
+
+    .lb-filename {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: rgba(107,95,80,0.6);
+      max-width: 60vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lb-nav {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .lb-btn {
+      background: transparent;
+      border: 1px solid var(--muted);
+      color: var(--muted);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-transform: uppercase;
+    }
+
+    .lb-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    #lb-close {
+      position: absolute;
+      top: 28px;
+      right: 32px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 32px;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    #lb-close:hover { color: var(--gold); }
+
+    /* Left/Right click zones */
+    .lb-zone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 25%;
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-size: 28px;
+      color: var(--gold);
+    }
+
+    #lightbox:hover .lb-zone { opacity: 0.4; }
+    .lb-zone:hover { opacity: 1 !important; background: linear-gradient(90deg, rgba(0,0,0,0.3), transparent); }
+    #lb-zone-right { right: 0; justify-content: flex-end; }
+    #lb-zone-right:hover { background: linear-gradient(270deg, rgba(0,0,0,0.3), transparent); }
+
+    /* SLIDESHOW BAR */
+    #slideshow-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13,11,8,0.95);
+      border-top: 1px solid rgba(201,169,110,0.12);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      z-index: 500;
+      backdrop-filter: blur(8px);
+    }
+
+    #slideshow-bar button {
+      background: transparent;
+      border: 1px solid var(--muted);
+      color: var(--muted);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      padding: 8px 18px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.25s;
+    }
+
+    #slideshow-bar button:hover,
+    #slideshow-bar button.on {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .sb-sep {
+      width: 1px;
+      height: 22px;
+      background: var(--muted);
+      opacity: 0.25;
+    }
+
+    /* PROGRESS */
+    #progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      z-index: 9000;
+      transition: width 0.3s ease;
+      width: 0;
+    }
+
+    /* EMPTY */
+    .empty {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 80px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.25em;
+    }
+
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: repeat(2, 1fr); gap: 3px; }
+      h1 { font-size: 48px; }
+      .lb-zone { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <p class="header-eyebrow">Galeria Pessoal</p>
+  <h1>Vanesca<span>Álbum de Memórias</span></h1>
+  <p class="photo-count" id="count-display">57 fotografias</p>
+</header>
+
+<div class="controls">
+  <button class="filter-btn active" data-filter="all">Todas</button>
+  <button class="filter-btn" data-filter="favorites">Favoritas ♥</button>
+</div>
+
+<div class="search-wrap">
+  <input type="text" id="search" placeholder="Buscar por número da foto..." autocomplete="off" />
+</div>
+
+<div class="grid" id="gallery"></div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lb-close" title="Fechar (Esc)">×</button>
+  <div class="lb-zone" id="lb-zone-left">‹</div>
+  <div class="lb-zone" id="lb-zone-right">›</div>
+  <img id="lightbox-img" src="" alt="" />
+  <div class="lb-meta">
+    <p class="lb-counter" id="lb-counter"></p>
+    <p class="lb-filename" id="lb-filename"></p>
+  </div>
+  <div class="lb-nav">
+    <button class="lb-btn" id="lb-prev">← Anterior</button>
+    <button class="lb-btn" id="lb-fav">♡ Favoritar</button>
+    <button class="lb-btn" id="lb-next">Próxima →</button>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div id="slideshow-bar">
+  <button id="btn-slideshow">▶ Slideshow</button>
+  <div class="sb-sep"></div>
+  <button id="btn-shuffle">Embaralhar</button>
+  <div class="sb-sep"></div>
+  <button id="btn-download">⬇ Baixar foto</button>
+  <div class="sb-sep"></div>
+  <span style="font-size:10px;letter-spacing:0.2em;color:var(--muted)" id="fav-count"></span>
+</div>
+
+<script>
+  // ─── BASE PATH (pasta com as fotos) ───────────────────────────────
+  const BASE = 'fotos/';
+
+  const photoFiles = [
+    "527502434_750940700754396_174949580908985269_n.jpg",
+    "530387131_1175535484593317_2528954337510842172_n.jpg",
+    "531760964_623423647092082_2483378698862265312_n.jpg",
+    "616570999_18306000025250242_628988912683690991_n.jpg",
+    "619598920_18190774300356316_121279921414152871_n.jpg",
+    "621794328_18382708003158951_6350625373673385344_n.jpg",
+    "622811485_18401869993132946_126611949638648573_n.jpg",
+    "622964377_18418796350138361_4667983453050023045_n.jpg",
+    "623101216_18312092509264585_1090194307333709701_n.jpg",
+    "625458820_18392436598183509_4884888843017483632_n.jpg",
+    "625760018_18380855197156496_4638948513594614223_n.jpg",
+    "626132589_18423580273142888_541446555692854319_n.jpg",
+    "626249084_18397272223182947_7431918876156260972_n.jpg",
+    "626259219_18376242475089548_5166031825688503490_n.jpg",
+    "626633612_18359034349164315_7456122050345707320_n.jpg",
+    "626816799_18381239647154502_1477813417780538477_n.jpg",
+    "627007155_18377986456093424_1509646255412144500_n.jpg",
+    "627048840_18386476903144957_2262396109101963878_n.jpg",
+    "627447756_18404395783130634_2623127043538710575_n.jpg",
+    "628267387_18402297436133329_1989991815953275379_n.jpg",
+    "628313265_18445946293098203_5953372245398650599_n.jpg",
+    "629206145_18400362553176520_3832574133383989046_n.jpg",
+    "629267731_18450610072097086_5390722112579988100_n.jpg",
+    "630129440_18436695886115962_2247488689835938638_n.jpg",
+    "631544129_18452378014097308_4293157880853068090_n.jpg",
+    "639886755_18561600553058131_1890121520401672025_n.jpg",
+    "640095219_18564708010023978_8298199367597775836_n.jpg",
+    "640118970_18569956717036173_9199171657657657791_n.jpg",
+    "640266377_18562933015031294_234793330492293410_n.jpg",
+    "640838370_18554876929017853_6574988874227045007_n.jpg",
+    "640925884_18560909917032296_7527467310085508928_n.jpg",
+    "641684916_18566800060058559_4825129593959777965_n.jpg",
+    "649042231_18315474298264217_3019280588649468544_n.jpg",
+    "649223215_18188867920317441_3614781495982178394_n.jpg",
+    "649982231_18318211234264333_6914331590888788201_n.jpg",
+    "650484605_18310469209286051_4188083299187479670_n.jpg",
+    "651190781_18567794953031721_1595642415493681086_n.jpg",
+    "651419002_18570747466054382_8685910353409377396_n.jpg",
+    "651676440_18511621783075651_853668796683564874_n.jpg",
+    "652371382_18537360067068021_9041979312096104978_n.jpg",
+    "652738395_18381780118091240_2131264312862114834_n.jpg",
+    "652745180_18308557624259879_9142006932811891204_n.jpg",
+    "652823742_18304774906263026_4375690533973230392_n.jpg",
+    "653384788_18571707340016846_9175456861197908106_n.jpg",
+    "653669194_18426828961136559_5555474042574647965_n.jpg",
+    "653883248_18354498787231794_1480720860414166825_n.jpg",
+    "653906115_18353591239226975_2632293711385294568_n.jpg",
+    "654329373_18446626387129811_5473796992913820985_n.jpg",
+    "655236052_18414760414130346_2426784195874751113_n.jpg",
+    "655404866_18436103314113629_5109740275222275248_n.jpg",
+    "655602189_18333871435168170_1811706325760977664_n.jpg",
+    "655738200_18334288303169915_2528165158306589903_n.jpg",
+    "656288763_18458123371101410_272810570516902678_n.jpg",
+    "656630389_18455719273100738_4705736292959637579_n.jpg",
+    "657540112_18413006338131156_1097857022831920006_n.jpg",
+    "658533466_18350940127230192_3284685320773143627_n.jpg",
+    "658850618_18518996038072401_8664531027693418212_n.jpg"
+  ];
+
+  // photo objects with original index
+  let photos = photoFiles.map((file, i) => ({ file, src: BASE + file, index: i }));
+
+  let favorites = JSON.parse(localStorage.getItem('vanesca_favs') || '[]');
+  let currentFilter = 'all';
+  let currentSearch = '';
+  let filteredPhotos = [];
+  let lbIndex = 0;
+  let slideshowTimer = null;
+
+  function getFiltered() {
+    let list = [...photos];
+    if (currentFilter === 'favorites') {
+      list = list.filter(p => favorites.includes(p.index));
+    }
+    if (currentSearch.trim()) {
+      const q = currentSearch.trim();
+      list = list.filter(p => String(p.index + 1).includes(q));
+    }
+    return list;
+  }
+
+  function updateFavCount() {
+    const el = document.getElementById('fav-count');
+    el.textContent = favorites.length ? `${favorites.length} favorita${favorites.length !== 1 ? 's' : ''}` : '';
+  }
+
+  function renderGrid() {
+    const gallery = document.getElementById('gallery');
+    gallery.innerHTML = '';
+    filteredPhotos = getFiltered();
+
+    document.getElementById('count-display').textContent =
+      `${filteredPhotos.length} fotografia${filteredPhotos.length !== 1 ? 's' : ''}`;
+    updateFavCount();
+
+    if (!filteredPhotos.length) {
+      gallery.innerHTML = '<p class="empty">Nenhuma foto encontrada.</p>';
+      return;
+    }
+
+    filteredPhotos.forEach(({ file, src, index }, i) => {
+      const item = document.createElement('div');
+      item.className = 'grid-item';
+      item.style.animationDelay = `${Math.min(i * 0.035, 1.5)}s`;
+
+      const isFav = favorites.includes(index);
+
+      item.innerHTML = `
+        <img src="${src}" alt="Foto ${index + 1}" loading="lazy" />
+        <div class="grid-item-overlay">
+          <span class="grid-item-num">${String(index + 1).padStart(2, '0')} / ${photos.length}</span>
+          <button class="fav-btn" data-idx="${index}"
+            style="color:${isFav ? '#c9a96e' : 'rgba(255,255,255,0.35)'}"
+            title="${isFav ? 'Remover favorito' : 'Favoritar'}">
+            ${isFav ? '♥' : '♡'}
+          </button>
+        </div>`;
+
+      item.querySelector('.fav-btn').addEventListener('click', e => {
+        e.stopPropagation();
+        toggleFav(index);
+      });
+
+      item.addEventListener('click', () => openLightbox(i));
+      gallery.appendChild(item);
+    });
+  }
+
+  function toggleFav(index) {
+    const pos = favorites.indexOf(index);
+    if (pos > -1) favorites.splice(pos, 1);
+    else favorites.push(index);
+    localStorage.setItem('vanesca_favs', JSON.stringify(favorites));
+    renderGrid();
+    if (document.getElementById('lightbox').classList.contains('open')) updateLbFavBtn();
+  }
+
+  // ─── LIGHTBOX ─────────────────────────────────────────────────────
+  function openLightbox(filteredIdx) {
+    lbIndex = filteredIdx;
+    showLbPhoto();
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+    stopSlideshow();
+  }
+
+  function showLbPhoto() {
+    const img = document.getElementById('lightbox-img');
+    img.classList.add('fading');
+    setTimeout(() => {
+      const p = filteredPhotos[lbIndex];
+      img.src = p.src;
+      img.alt = `Foto ${p.index + 1}`;
+      document.getElementById('lb-counter').textContent =
+        `${lbIndex + 1} de ${filteredPhotos.length}`;
+      document.getElementById('lb-filename').textContent = p.file;
+      img.classList.remove('fading');
+      updateLbFavBtn();
+      updateProgress();
+    }, 180);
+  }
+
+  function updateLbFavBtn() {
+    const p = filteredPhotos[lbIndex];
+    const btn = document.getElementById('lb-fav');
+    const isFav = favorites.includes(p.index);
+    btn.textContent = isFav ? '♥ Favorita' : '♡ Favoritar';
+    btn.style.color = isFav ? 'var(--gold)' : '';
+    btn.style.borderColor = isFav ? 'var(--gold)' : '';
+  }
+
+  function lbPrev() {
+    lbIndex = (lbIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
+    showLbPhoto();
+  }
+
+  function lbNext() {
+    lbIndex = (lbIndex + 1) % filteredPhotos.length;
+    showLbPhoto();
+  }
+
+  function updateProgress() {
+    const pct = filteredPhotos.length > 1
+      ? (lbIndex / (filteredPhotos.length - 1)) * 100 : 100;
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  // ─── SLIDESHOW ────────────────────────────────────────────────────
+  function startSlideshow() {
+    if (!document.getElementById('lightbox').classList.contains('open')) {
+      lbIndex = 0;
+      openLightbox(0);
+    }
+    slideshowTimer = setInterval(lbNext, 3500);
+    document.getElementById('btn-slideshow').classList.add('on');
+    document.getElementById('btn-slideshow').textContent = '⏸ Pausar';
+  }
+
+  function stopSlideshow() {
+    clearInterval(slideshowTimer);
+    slideshowTimer = null;
+    document.getElementById('btn-slideshow').classList.remove('on');
+    document.getElementById('btn-slideshow').textContent = '▶ Slideshow';
+  }
+
+  // ─── EVENTS ───────────────────────────────────────────────────────
+  document.getElementById('lb-close').addEventListener('click', closeLightbox);
+  document.getElementById('lb-prev').addEventListener('click', lbPrev);
+  document.getElementById('lb-next').addEventListener('click', lbNext);
+  document.getElementById('lb-zone-left').addEventListener('click', lbPrev);
+  document.getElementById('lb-zone-right').addEventListener('click', lbNext);
+
+  document.getElementById('lb-fav').addEventListener('click', () => {
+    toggleFav(filteredPhotos[lbIndex].index);
+  });
+
+  document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === document.getElementById('lightbox') ||
+        e.target === document.getElementById('lightbox-img')) return;
+  });
+
+  document.addEventListener('keydown', e => {
+    const lb = document.getElementById('lightbox');
+    if (lb.classList.contains('open')) {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); lbNext(); }
+      else if (e.key === 'ArrowLeft') lbPrev();
+      else if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'f' || e.key === 'F') toggleFav(filteredPhotos[lbIndex].index);
+    }
+  });
+
+  document.getElementById('btn-slideshow').addEventListener('click', () => {
+    slideshowTimer ? stopSlideshow() : startSlideshow();
+  });
+
+  document.getElementById('btn-shuffle').addEventListener('click', () => {
+    photos = photos.sort(() => Math.random() - 0.5);
+    renderGrid();
+  });
+
+  document.getElementById('btn-download').addEventListener('click', () => {
+    const lb = document.getElementById('lightbox');
+    if (!lb.classList.contains('open')) return;
+    const p = filteredPhotos[lbIndex];
+    const a = document.createElement('a');
+    a.href = p.src;
+    a.download = p.file;
+    a.click();
+  });
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderGrid();
+    });
+  });
+
+  document.getElementById('search').addEventListener('input', e => {
+    currentSearch = e.target.value;
+    renderGrid();
+  });
+
+  // Touch swipe on lightbox
+  let touchStartX = null;
+  document.getElementById('lightbox').addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.getElementById('lightbox').addEventListener('touchend', e => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? lbNext() : lbPrev(); }
+    touchStartX = null;
+  });
+
+  // Init
+  renderGrid();
+</script>
+</body>
+</html>
