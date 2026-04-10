@@ -1,0 +1,21 @@
+# Arquivos de desenvolvimento
+*.py
+*.yml
+*.yaml
+!netlify.toml
+
+# Dados brutos
+*.xlsx
+*.xls
+
+# Arquivos compactados
+*.zip
+*.rar
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
