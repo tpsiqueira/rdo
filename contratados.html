@@ -121,6 +121,18 @@
         let sortColumn = null;
         let sortDirection = 'asc';
 
+        const colunasMonetarias = ['Salário Base', 'Proventos', 'Vencimentos Totais', 'Descontos', 'Líquido'];
+
+        function formatarMoeda(valor) {
+            if (valor === null || valor === undefined || valor === '') return '-';
+            const numero = parseFloat(valor);
+            if (isNaN(numero)) return valor;
+            return numero.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
         async function loadJSON() {
             const mes = document.getElementById('filterMes').value;
             document.getElementById('loading').style.display = 'flex';
@@ -193,16 +205,16 @@
             }
 
             filteredData.sort((a, b) => {
-                let valA = a[column] || '';
-                let valB = b[column] || '';
+                let valA = a[column];
+                let valB = b[column];
                 
-                // Tenta ordenar como número se for valor monetário
-                if (valA.includes('R$')) {
-                    valA = parseFloat(valA.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
-                    valB = parseFloat(valB.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+                // Ordena como número se for coluna monetária
+                if (colunasMonetarias.includes(column)) {
+                    valA = parseFloat(valA) || 0;
+                    valB = parseFloat(valB) || 0;
                 } else {
-                    valA = String(valA).toLowerCase();
-                    valB = String(valB).toLowerCase();
+                    valA = String(valA || '').toLowerCase();
+                    valB = String(valB || '').toLowerCase();
                 }
 
                 if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
@@ -276,8 +288,13 @@
                 let rowHTML = `<td class="px-4 py-3 text-sm text-gray-600">${index + 1}</td>`;
                 
                 columns.forEach(col => {
-                    const value = row[col] !== undefined ? row[col] : '-';
-                    rowHTML += `<td class="px-4 py-3 text-sm text-gray-600">${value}</td>`;
+                    let value = row[col] !== undefined ? row[col] : '-';
+                    const isMonetaria = colunasMonetarias.includes(col);
+                    if (isMonetaria) {
+                        value = formatarMoeda(value);
+                    }
+                    const alignClass = isMonetaria ? 'text-right' : 'text-left';
+                    rowHTML += `<td class="px-4 py-3 text-sm text-gray-600 ${alignClass}">${value}</td>`;
                 });
                 
                 tr.innerHTML = rowHTML;
