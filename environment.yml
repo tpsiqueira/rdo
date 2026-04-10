@@ -1,0 +1,17 @@
+name: rdo
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pandas
+  - openpyxl
+  - xlrd
+  - numpy
+  - jupyter
+  - notebook
+  - matplotlib
+  - seaborn
+  - pip
+  - pip:
+    - lxml
