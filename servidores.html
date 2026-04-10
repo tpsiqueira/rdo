@@ -26,7 +26,7 @@
             vertical-align: middle;
         }
         table td { white-space: normal; word-wrap: break-word; }
-        table th { white-space: nowrap; }
+        table th { white-space: normal; height: 70px; max-height: 70px; }
         table th:nth-child(1), table td:nth-child(1) { width: 30px; }
         table th:nth-child(2), table td:nth-child(2) { width: 70px; }
         table th:nth-child(3), table td:nth-child(3) { width: 70px; }
@@ -163,9 +163,18 @@
                 const isActive = sortColumn === col;
                 const icon = isActive ? (sortDirection === 'asc' ? '▲' : '▼') : '▲▼';
                 const activeClass = isActive ? 'active' : '';
+                const words = col.split(' ');
+                const mid = Math.ceil(words.length / 2);
+                let colFormatted = '';
+                for (let i = 0; i < words.length; i++) {
+                    colFormatted += words[i];
+                    if (i < words.length - 1) {
+                        colFormatted += (i === mid - 1) ? '<br>' : ' ';
+                    }
+                }
                 headerHTML += `<th class="px-4 py-3 text-left text-sm font-semibold">
                     <span class="sort-btn" onclick="sortData('${col}')">
-                        ${col}
+                        ${colFormatted}
                         <span class="sort-icon ${activeClass}">${icon}</span>
                     </span>
                 </th>`;
